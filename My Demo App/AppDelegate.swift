@@ -42,13 +42,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Delegate
         BacktraceClient.shared?.delegate = self
         
-        do {
-            try throwingFunc()
-        } catch {
-            BacktraceClient.shared?.send(attachmentPaths: []) { (result) in
-                print("AppDelegate:Result:\(result)")
-            }
-        }
+        // Uncomment to test
+//        do {
+//            try throwingFunc()
+//        } catch {
+//            BacktraceClient.shared?.send(attachmentPaths: []) { (result) in
+//                print("AppDelegate:Result:\(result)")
+//            }
+//        }
+//        // Send NSException
+//        let exception = NSException(name: NSExceptionName.characterConversionException, reason: "custom reason", userInfo: ["testUserInfo": "tests"])
+//        BacktraceClient.shared?.send(exception: exception, attachmentPaths: [], completion: { (result: BacktraceResult) in
+//            print(result)
+//        })
+        
         // Lof level
         BacktraceClient.shared?.loggingDestinations = [BacktraceBaseDestination(level: .debug)]
         // Enable error free metrics https://docs.saucelabs.com/error-reporting/web-console/overview/#stability-metrics-widgets
