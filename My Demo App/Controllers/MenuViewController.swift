@@ -15,15 +15,6 @@ class MenuViewController: UIViewController {
     
     @IBOutlet weak var cartCountLbl: UILabel!
     
-    enum CustomError: Error {
-        case runtimeError
-    }
-
-    func throwingFunc() throws {
-        throw CustomError.runtimeError
-    }
-
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         cartCountLbl.text = String(Engine.sharedInstance.cartCount)
@@ -46,32 +37,9 @@ class MenuViewController: UIViewController {
     }
 
     @IBAction func webViewButton(_ sender: Any) {
-        do {
-            try throwingFunc()
-        } catch let error as CustomError {
-            switch error {
-            case .runtimeError:
-                let exception = NSException(
-                    name: NSExceptionName(rawValue: "RuntimeError Handled Exception"),
-                    reason: "Caught CustomError.runtimeError",
-                    userInfo: ["error": "\(error)"]
-                )
-                BacktraceClient.shared?.send(exception: exception, attachmentPaths: [], completion: { (result: BacktraceResult) in
-                    print("Backtrace: \(result)")
-                })
-            }
-        } catch {
-            print("Unexpected error: \(error)")
-        }
-
-        let exception = NSException(
-            name: NSExceptionName.characterConversionException,
-            reason: "custom reason",
-            userInfo: ["testUserInfo": "tests"]
-        )
-        BacktraceClient.shared?.send(exception: exception, attachmentPaths: [], completion: { (result: BacktraceResult) in
-            print("Test Exception: \(result)")
-        })
+        let storyboard = UIStoryboard.init(name: "Menu", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "WebViewViewController") as! WebViewViewController
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     @IBAction func qrCodeScannerButton(_ sender: Any) {
