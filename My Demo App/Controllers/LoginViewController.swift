@@ -7,6 +7,7 @@
 
 import UIKit
 import LocalAuthentication
+import Backtrace
 
 class LoginViewController: UIViewController {
     
@@ -24,7 +25,10 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        _ = BacktraceClient.shared?.addBreadcrumb("Login screen loaded",
+                                                  attributes: [:],
+                                                  type: .log,
+                                                  level: .info)
         cartCountLbl.text = String(Engine.sharedInstance.cartCount)
         
         if Engine.sharedInstance.cartCount < 1 {
@@ -40,6 +44,8 @@ class LoginViewController: UIViewController {
         }else{
             faceLoginContView.isHidden = true
         }
+        let invalidPointer = UnsafeMutableRawPointer(bitPattern: 0x1)!
+        invalidPointer.storeBytes(of: 0xFF, as: UInt8.self)
     }
     
     @IBAction func backButton(_ sender: Any) {

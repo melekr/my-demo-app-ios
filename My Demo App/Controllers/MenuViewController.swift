@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Backtrace
 
 class MenuViewController: UIViewController {
     
@@ -26,11 +27,16 @@ class MenuViewController: UIViewController {
         }else{
             loginBtnLbl.text = "Login"
         }
+        _ = BacktraceClient.shared?.addBreadcrumb("Menu screen loaded",
+                                                  attributes: [:],
+                                                  type: .log,
+                                                  level: .info)
     }
     
     @IBAction func crashButton(_ sender: Any) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            fatalError()
+            let invalidPointer = UnsafeMutableRawPointer(bitPattern: 0x1)!
+            invalidPointer.storeBytes(of: 0xDEADBEEF as UInt32, as: UInt32.self)
         }
     }
 
@@ -125,7 +131,7 @@ class MenuViewController: UIViewController {
     
     @IBAction func reportABugDebug() {
         let storyboard = UIStoryboard.init(name: "Menu", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "ReportABugDebugViewController") as! ReportABugDebugViewController
+        let vc = storyboard.instantiateViewController(withIdentifier: "ErrorReportingViewController") as! ErrorReportingViewController
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
