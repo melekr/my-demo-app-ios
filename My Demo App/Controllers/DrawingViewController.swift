@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Backtrace
 
 class DrawingViewController: UIViewController, YPSignatureDelegate {
     
@@ -15,16 +16,35 @@ class DrawingViewController: UIViewController, YPSignatureDelegate {
     
     @IBOutlet weak var cartCountLbl: UILabel!
     
+    var bigData: BigData?
+    
+    struct BigData {
+        var buffer: UnsafeMutablePointer<Int>?
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        _ = BacktraceClient.shared?.addBreadcrumb("Drawing screen loaded",
+                                                  attributes: [:],
+                                                  type: .log,
+                                                  level: .info)
         cartCountLbl.text = String(Engine.sharedInstance.cartCount)
         if Engine.sharedInstance.cartCount < 1 {
             cartCountContView.isHidden = true
         }
-        
-        signatureView.delegate = self
+        prepareSignatureView()
     }
     
+    func prepareSignatureView() {
+        signatureView.delegate = self
+        
+        let pointer = UnsafeMutablePointer<Int>.allocate(capacity: 10)
+        pointer.initialize(repeating: 0, count: 10)
+        bigData = BigData(buffer: pointer)
+        
+        pointer.deallocate()
+        bigData?.buffer?[5] = 999
+    }
     
     @IBAction func backButton(_ sender: Any) {
         navigationController?.popViewController(animated: true)
@@ -45,6 +65,8 @@ class DrawingViewController: UIViewController, YPSignatureDelegate {
     
     func didStart(_ view : YPDrawSignatureView) {
         print("Started Drawing")
+        
+
     }
     
     func didFinish(_ view : YPDrawSignatureView) {

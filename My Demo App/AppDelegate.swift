@@ -32,7 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let backtraceConfiguration = BacktraceClientConfiguration(credentials: backtraceCredentials,
                                                                   dbSettings: backtraceDatabaseSettings,
                                                                   reportsPerMin: 10,
-                                                                  allowsAttachingDebugger: false,
+                                                                  allowsAttachingDebugger: true,
                                                                   detectOOM: true)
         BacktraceClient.shared = try? BacktraceClient(configuration: backtraceConfiguration)
         // Attributes
@@ -71,6 +71,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                   attributes: ["Backtrace SDK Enabled": "true",
                                                                "TestFairyWrapper Enabled": "true"],
                                                   type: .navigation,
+                                                  level: .info)
+        
+        _ = BacktraceClient.shared?.addBreadcrumb("SDK init complete",
+                                                  attributes: [:],
+                                                  type: .log,
                                                   level: .info)
         
         return true

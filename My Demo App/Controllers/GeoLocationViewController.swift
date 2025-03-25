@@ -8,6 +8,7 @@
 import UIKit
 import CoreLocation
 import SafariServices
+import Backtrace
 
 class GeoLocationViewController: UIViewController, CLLocationManagerDelegate,SFSafariViewControllerDelegate {
     
@@ -20,13 +21,26 @@ class GeoLocationViewController: UIViewController, CLLocationManagerDelegate,SFS
     
     var locationManager = CLLocationManager()
     
+    var kvoObject: KVOClass?
+    
+    @objc class KVOClass: NSObject {
+        @objc dynamic var observedValue: String = "initial"
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        _ = BacktraceClient.shared?.addBreadcrumb("Geo Location screen loaded",
+                                                  attributes: [:],
+                                                  type: .log,
+                                                  level: .info)
         cartCountLbl.text = String(Engine.sharedInstance.cartCount)
         if Engine.sharedInstance.cartCount < 1 {
             cartCountContView.isHidden = true
         }
-        
+        initLocationManager()
+    }
+    
+    func initLocationManager() {
         self.locationManager.requestAlwaysAuthorization()
         
         self.locationManager.requestWhenInUseAuthorization()
@@ -37,6 +51,18 @@ class GeoLocationViewController: UIViewController, CLLocationManagerDelegate,SFS
             locationManager.startUpdatingLocation()
         }
         
+        
+        let obj = KVOClass()
+        self.kvoObject = obj
+        
+        obj.addObserver(self, forKeyPath: #keyPath(KVOClass.observedValue), options: [.new], context: nil)
+        
+        self.kvoObject = nil
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            obj.observedValue = "KVO meltdown imminent"
+        }
+
     }
     
     @IBAction func backButton(_ sender: Any) {

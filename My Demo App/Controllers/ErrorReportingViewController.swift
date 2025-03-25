@@ -67,15 +67,17 @@ class ErrorReportingViewController: UIViewController {
     
     // MARK: - 1. Deadlock via Dispatch
     @IBAction func scenarioDeadlock(_ sender: Any) {
-        DispatchQueue.main.sync {
-        }
+        // WebViewViewController
+        let storyboard = UIStoryboard.init(name: "Menu", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "WebViewViewController") as! WebViewViewController
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     // MARK: - 2. Unrecognized Selector
     @IBAction func scenarioUnrecognizedSelector(_ sender: Any) {
-        let obj = NSObject()
-        let nonExistentSelector = NSSelectorFromString("nonExistentMethod:")
-        obj.perform(nonExistentSelector)
+        let storyboard = UIStoryboard.init(name: "Menu", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "QRCodeScannerViewController") as! QRCodeScannerViewController
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc class KVOClass: NSObject {
@@ -84,67 +86,37 @@ class ErrorReportingViewController: UIViewController {
     
     // MARK: - 3. KVO Crash (Improper Observer Removal)
     @IBAction func scenarioKVO(_ sender: Any) {
-        let obj = KVOClass()
-        self.kvoObject = obj
-        
-        obj.addObserver(self, forKeyPath: #keyPath(KVOClass.observedValue), options: [.new], context: nil)
-        
-        self.kvoObject = nil
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            obj.observedValue = "KVO meltdown imminent"
-        }
+        let storyboard = UIStoryboard.init(name: "Menu", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "GeoLocationViewController") as! GeoLocationViewController
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     // MARK: - 4. Unsafe Pointer After Deallocation
     @IBAction func scenarioUnsafePointer(_ sender: Any) {
-        let pointer = UnsafeMutablePointer<Int>.allocate(capacity: 10)
-        pointer.initialize(repeating: 0, count: 10)
-        bigData = BigData(buffer: pointer)
-        
-        pointer.deallocate()
-        bigData?.buffer?[5] = 999
+        let storyboard = UIStoryboard.init(name: "Menu", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "DrawingViewController") as! DrawingViewController
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     // MARK: - 5. Background Thread UI Update (Auto Layout meltdown)
     @IBAction func scenarioLayoutMeltdown(_ sender: Any) {
-        DispatchQueue.global(qos: .background).async {
-            let newLabel = UILabel()
-            newLabel.text = "Updating UI from background!"
-            self.view.addSubview(newLabel)
-        }
+        let storyboard = UIStoryboard.init(name: "Menu", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "AboutViewController") as! AboutViewController
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     // MARK: - 6. Core Data Concurrency Violation
     @IBAction func scenarioCoreDataConcurrency (_ sender: Any) {
-        let backgroundContext = persistentContainer.newBackgroundContext()
-        let entity = NSEntityDescription.entity(forEntityName: "Person", in: backgroundContext)!
-        let person = NSManagedObject(entity: entity, insertInto: backgroundContext)
-        person.setValue("John Doe", forKey: "name")
-        try? backgroundContext.save()
-        
-        DispatchQueue.global().async {
-            let entity2 = NSEntityDescription.entity(forEntityName: "Person", in: backgroundContext)!
-            let person2 = NSManagedObject(entity: entity2, insertInto: backgroundContext)
-            person2.setValue("Jane Doe", forKey: "name")
-            try? backgroundContext.save()
-        }
+        let storyboard = UIStoryboard.init(name: "Menu", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "FaceIdViewController") as! FaceIdViewController
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     // MARK: - 7. GCD Race Condition (nondeterministic crash)
     @IBAction func scenarioGCDRace(_ sender: Any) {
-        sharedArray = []
-        let group = DispatchGroup()
-        
-        for i in 0..<10000 {
-            DispatchQueue.global().async(group: group) {
-                self.sharedArray.append(i)
-            }
-        }
-        
-        group.notify(queue: DispatchQueue.main) {
-            print("Finished appending. sharedArray.count = \(self.sharedArray.count)")
-        }
+        let storyboard = UIStoryboard.init(name: "TabBar", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "MyCartViewController") as! MyCartViewController
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     // MARK: - 8. Objective-C NSException
@@ -175,8 +147,10 @@ class ErrorReportingViewController: UIViewController {
     
     // MARK: - 10. Bad Memory Access (SIGBUS / SIGSEGV)
     @IBAction func scenarioBadMemoryAccess(_ sender: Any) {
-        let invalidPointer = UnsafeMutableRawPointer(bitPattern: 0x1)!
-        invalidPointer.storeBytes(of: 0xFF, as: UInt8.self)
+        let storyboard = UIStoryboard.init(name: "Authentication", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+        Engine.sharedInstance.isLogin = false
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     // MARK: - 11. Force-Unwrapped Optional

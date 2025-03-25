@@ -27,6 +27,10 @@ class MenuViewController: UIViewController {
         }else{
             loginBtnLbl.text = "Login"
         }
+        _ = BacktraceClient.shared?.addBreadcrumb("Menu screen loaded",
+                                                  attributes: [:],
+                                                  type: .log,
+                                                  level: .info)
     }
     
     @IBAction func crashButton(_ sender: Any) {

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Backtrace
 
 class MyCartViewController: UIViewController {
     
@@ -21,8 +22,14 @@ class MyCartViewController: UIViewController {
     
     @IBOutlet weak var productTV: UITableView!
     
+    var sharedArray = [Int]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        _ = BacktraceClient.shared?.addBreadcrumb("Cart screen loaded",
+                                                  attributes: [:],
+                                                  type: .log,
+                                                  level: .info)
         productTV.delegate = self
         productTV.dataSource = self
         
@@ -105,8 +112,20 @@ extension MyCartViewController: UITableViewDelegate, UITableViewDataSource {
             cartCountContView.isHidden = true
         }
         
-        return Engine.sharedInstance.cartList.count
+        sharedArray = []
+        let group = DispatchGroup()
         
+        for i in 0..<10000 {
+            DispatchQueue.global().async(group: group) {
+                self.sharedArray.append(i)
+            }
+        }
+        
+        group.notify(queue: DispatchQueue.main) {
+            print("Finished appending. sharedArray.count = \(self.sharedArray.count)")
+        }
+        
+        return Engine.sharedInstance.cartList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

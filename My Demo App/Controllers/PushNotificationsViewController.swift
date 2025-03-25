@@ -5,6 +5,7 @@
 
 import UIKit
 import UserNotifications
+import Backtrace
 
 class PushNotificationsView: UIView {
     override init(frame: CGRect) {

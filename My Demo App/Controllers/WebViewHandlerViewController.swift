@@ -7,6 +7,7 @@
 
 import UIKit
 import WebKit
+import Backtrace
 
 class WebViewHandlerViewController: UIViewController {
 
@@ -19,15 +20,23 @@ class WebViewHandlerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        _ = BacktraceClient.shared?.addBreadcrumb("Webview screen loaded",
+                                                  attributes: [:],
+                                                  type: .log,
+                                                  level: .info)
+        setupWebView()
+    }
+    
+    @IBAction func backButton(_ sender: Any) {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    func setupWebView() {
         let myURLString = urlString
         let url = URL(string: myURLString)
         let request = URLRequest(url: url!)
         webView.navigationDelegate = self
         webView.load(request)
-    }
-    
-    @IBAction func backButton(_ sender: Any) {
-        navigationController?.popViewController(animated: true)
     }
     
 }

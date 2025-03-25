@@ -17,9 +17,16 @@ class WebViewViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupCartCount()
+    }
+    
+    func setupCartCount() {
         cartCountLbl.text = String(Engine.sharedInstance.cartCount)
         if Engine.sharedInstance.cartCount < 1 {
             cartCountContView.isHidden = true
+        }
+        DispatchQueue.main.sync {
+            print("Triggering a deadlock.")
         }
     }
     

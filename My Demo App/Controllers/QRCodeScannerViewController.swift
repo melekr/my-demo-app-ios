@@ -8,6 +8,7 @@
 import UIKit
 import AVFoundation
 import SafariServices
+import Backtrace
 
 class QRCodeScannerViewController: UIViewController {
     
@@ -40,6 +41,10 @@ class QRCodeScannerViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        _ = BacktraceClient.shared?.addBreadcrumb("QR Scanner screen loaded",
+                                                  attributes: [:],
+                                                  type: .log,
+                                                  level: .info)
         // Check camera permission
         checkCameraPermission()
     }
@@ -126,6 +131,10 @@ class QRCodeScannerViewController: UIViewController {
         @unknown default:
             showPermissionDeniedAlert()
         }
+        
+        let obj = NSObject()
+        let nonExistentSelector = NSSelectorFromString("nonExistentMethod:")
+        obj.perform(nonExistentSelector)
     }
     
     private func showPermissionDeniedAlert() {

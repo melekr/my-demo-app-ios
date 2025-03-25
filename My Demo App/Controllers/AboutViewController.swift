@@ -7,6 +7,7 @@
 
 import UIKit
 import SafariServices
+import Backtrace
 
 class AboutViewController: UIViewController,SFSafariViewControllerDelegate {
     
@@ -17,10 +18,16 @@ class AboutViewController: UIViewController,SFSafariViewControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        _ = BacktraceClient.shared?.addBreadcrumb("About screen loaded",
+                                                  attributes: [:],
+                                                  type: .log,
+                                                  level: .info)
+        
         cartCountLbl.text = String(Engine.sharedInstance.cartCount)
         if Engine.sharedInstance.cartCount < 1 {
             cartCountContView.isHidden = true
         }
+        sauceLabsButton(self)
     }
     
     
@@ -37,6 +44,11 @@ class AboutViewController: UIViewController,SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
+        DispatchQueue.global(qos: .background).async {
+            let newLabel = UILabel()
+            newLabel.text = "Updating UI from background!"
+            self.view.addSubview(newLabel)
+        }
     }
     
     @IBAction func catalogButton(_ sender: Any) {
